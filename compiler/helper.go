@@ -237,12 +237,12 @@ func convertAddress(data []string) {
     fmt.Println(list)
 
     for i:=0; i<len(data); i++ {
-        val, _ := rmem[data[i][1:]]
-        if strings.HasPrefix(data[i], "@") && slices.Contains(list, data[i][1:]) {
-            data[i] = "@" + strconv.Itoa(val)
+        if len(data[i]) > 1 {
+            val, _ := rmem[data[i][1:]]
+            if strings.HasPrefix(data[i], "@") && slices.Contains(list, data[i][1:]) {
+                data[i] = "@" + strconv.Itoa(val)
+            }
         }
-
     }
-
 }
 

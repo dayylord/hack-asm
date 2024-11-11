@@ -38,6 +38,18 @@ func main() {
         fmt.Fprintln(fo, result[i])
     }
 
+    bin, err := os.Create("binary_rep.txt")
+    if err != nil {
+        panic(err)
+    }
+    defer bin.Close()
+    for i := range result {
+        i, err := strconv.ParseUint(result[i], 2, 16)
+        if err != nil {
+            panic(err)
+        }
+        fmt.Fprintln(bin, int16(i))
+    }
 }
 
 func giveOutputFile(data string) string {
@@ -53,12 +65,14 @@ func handleInstructions(data []string) []string {
     var result []string
     n := len(data)
     for i:=0; i<n; i++ {
-        if strings.HasPrefix(data[i], "@") {
-            fmt.Println("A instruction")
-            result = append(result, handleAInstruction(data[i]))
-        } else {
-            fmt.Println("C instruction")
-            result = append(result, handleCInstructions(data[i]))
+        if len(data[i]) > 1 {
+            if strings.HasPrefix(data[i], "@") {
+                fmt.Println("A instruction")
+                result = append(result, handleAInstruction(data[i]))
+            } else {
+                fmt.Println("C instruction")
+                result = append(result, handleCInstructions(data[i]))
+            }
         }
     }
 
@@ -69,15 +83,16 @@ func handleAInstruction(data string) string {
     var a string
     if data[1] == 'R' {
         a = data[2:]
+        k, _ := strconv.Atoi(a)
+        if k > 15 {
+            //throw err and advice to use a symbol
+        }
     } else {
         a = data[1:]
     }
     var result strings.Builder
     result.WriteString("0")
     i, _ := strconv.Atoi(a)
-    if i > 15 {
-        //throw err and advice to use a symbol
-    }
     str := strconv.FormatInt(int64(i),2)
     result.WriteString(fmt.Sprintf("%015s", str))
     return result.String()
@@ -94,10 +109,10 @@ func handleCInstructions(data string) string {
         if strings.Contains(rhs, ";") {
             comp := strings.Split(rhs, ";")[0]
             jmp := strings.Split(rhs, ";")[1]
-            if strings.Contains(comp, "A") && !strings.Contains(comp, "M") {
-                result.WriteString("0") // a == 0 
+            if strings.Contains(comp, "M") {
+                result.WriteString("1") // a == 0 
             } else {
-                result.WriteString("1") // a == 1
+                result.WriteString("0") // a == 1
             }
             d := handleLhs(lhs)
             c := handleComputation(comp)
@@ -106,10 +121,10 @@ func handleCInstructions(data string) string {
             result.WriteString(d) //destination
             result.WriteString(j) //jump to
         } else {
-            if strings.Contains(rhs, "A") && !strings.Contains(rhs, "M") {
-                result.WriteString("0") // a == 0 
+            if strings.Contains(rhs, "M") {
+                result.WriteString("1") // a == 0 
             } else {
-                result.WriteString("1") // a == 1
+                result.WriteString("0") // a == 1
             }
             result.WriteString(handleComputation(rhs))
             result.WriteString(handleLhs(lhs))
@@ -119,10 +134,10 @@ func handleCInstructions(data string) string {
         if strings.Contains(data, ";") {
             comp := strings.Split(data, ";")[0]
             jmp := strings.Split(data, ";")[1]
-            if strings.Contains(comp, "A") && !strings.Contains(comp, "M") {
-                result.WriteString("0")
-            } else {
+            if strings.Contains(comp, "M") {
                 result.WriteString("1")
+            } else {
+                result.WriteString("0")
             }
             c := handleComputation(comp)
             j := handleJump(jmp)
