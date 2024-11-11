@@ -38,7 +38,7 @@ func main() {
         fmt.Fprintln(fo, result[i])
     }
 
-    bin, err := os.Create("binary_rep.txt")
+    bin, err := os.Create("decimal_rep.txt")
     if err != nil {
         panic(err)
     }
