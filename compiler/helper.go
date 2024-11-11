@@ -201,17 +201,37 @@ func sanitizeSymbols(d []string) []string {
     return dlr
 }
 
-func readSymbols(data []string) {
+func readSymbols(d []string) {
+
+    //truly remove whitespaces
+    data := trulyRemoveWhiteSpaces(d)
+
+    sc := 0
 
     n := len(data)
     for i:=0; i<n; i++ {
         if strings.HasPrefix(data[i], "(") && strings.HasSuffix(data[i], ")") {
             k := len(data[i])
-            jmp[data[i][1:k-1]] = i;
+            jmp[data[i][1:k-1]] = i-sc;
+            sc++
         }
     }
+    d = data
     fmt.Println(jmp)
-    fmt.Println(data)
+    fmt.Println(d)
+}
+
+func trulyRemoveWhiteSpaces(d []string) []string {
+    var data []string
+
+    for i:= range d {
+        if len(d[i]) > 1 {
+            data = append(data, d[i])
+        }
+    }
+
+
+    return data
 }
 
 func convertSymbols(data []string) {
