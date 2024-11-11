@@ -1,0 +1,10 @@
+@33
+M=1 //this is a comment
+D=A+1;JEQ
+M=0;JEQ
+@R0
+(LOOP)
+@i
+M=1
+@LOOP
+0;JMP
