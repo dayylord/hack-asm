@@ -46,7 +46,7 @@ func giveOutputFile(data string) string {
     file := path[len(path)-1]
     fmt.Println(path)
     file_name := strings.Split(file, ".")[0]
-    return file_name + ".asma"
+    return file_name + ".hack"
 }
 
 func handleInstructions(data []string) []string {
